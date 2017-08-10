@@ -60,6 +60,7 @@ defmodule Lambda do
 
 end
 
+# Factorial implemented using the "poor man's ycombinator"
 fact5 = quote do: (
 (fn fact ->
   (fn n ->
@@ -80,8 +81,30 @@ end)
 (5)
 )
 
+# Some function: (((λ f . (λ x . (f x))) (λ a . a)) (λ b . b)) ->
+#                ((λ x . ((λ a . a) x)) (λ b . b)) ->
+#                ((λ a . a) (λ b . b)) ->
+#                (λ b . b)
+
+somefun = quote do: (
+  (
+    (fn f -> (fn x -> f . (x) end) end)
+    .
+    (fn a -> a end)
+  )
+  .
+  (fn b -> b end)
+)
+
 initial_env = fn y -> raise "Variable '#{y}' was unbound" end
 
 IO.puts "Calls our very own lambda calculus"
-result = Lambda.eval_exp(fact5, initial_env)
-IO.puts "Result: fact(5) = #{inspect result}"
+IO.puts "eval_exp(fact5)"
+fact5_result = Lambda.eval_exp(fact5, initial_env)
+IO.puts "Result:"
+IO.puts fact5_result
+
+IO.puts "eval_exp(somefun).(42)"
+somefun_result = Lambda.eval_exp(somefun, initial_env)
+IO.puts "Result:"
+IO.puts somefun_result.(42)

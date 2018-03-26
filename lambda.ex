@@ -25,7 +25,7 @@ defmodule Lambda do
     (eval_exp(rator, env)) . (eval_exp(rand, env))
   end
 
-  # A few helpers / adjustments compared to ye olde scheme version
+  # A few helper functions to postpone the task of implementing Church Encoding
 
   def eval_exp(n, _env) when is_number(n), do: n
 
@@ -60,7 +60,9 @@ defmodule Lambda do
 
 end
 
-# Factorial implemented using the "poor man's ycombinator"
+# An implementation of the Factorial function using the "poor man's ycombinator"
+# to demonstrate that the lambda calculus interpreter is working as expected.
+
 fact5 = quote do: (
 (fn fact ->
   (fn n ->
@@ -81,12 +83,14 @@ end)
 (5)
 )
 
-# Some function: (((λ f . (λ x . (f x))) (λ a . a)) (λ b . b)) ->
-#                ((λ x . ((λ a . a) x)) (λ b . b)) ->
-#                ((λ a . a) (λ b . b)) ->
-#                (λ b . b)
+# A simple example of an expression in the lambda calculus using non of the helper functions defined above
 
-somefun = quote do: (
+# (((λ f . (λ x . (f x))) (λ a . a)) (λ b . b)) ->
+# ((λ x . ((λ a . a) x)) (λ b . b)) ->
+# ((λ a . a) (λ b . b)) ->
+# (λ b . b)
+
+example_fun = quote do: (
   (
     (fn f -> (fn x -> f . (x) end) end)
     .
@@ -104,7 +108,7 @@ fact5_result = Lambda.eval_exp(fact5, initial_env)
 IO.puts "Result:"
 IO.puts fact5_result
 
-IO.puts "eval_exp(somefun).(42)"
-somefun_result = Lambda.eval_exp(somefun, initial_env)
+IO.puts "eval_exp(example_fun).(42)"
+example_fun_result = Lambda.eval_exp(example_fun, initial_env)
 IO.puts "Result:"
-IO.puts somefun_result.(42)
+IO.puts example_fun_result.(42)
